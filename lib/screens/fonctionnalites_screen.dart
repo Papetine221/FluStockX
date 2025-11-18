@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:techstock/widgets/main_app_bar.dart';
+import 'package:techstock/screens/fonctionnalites_screen/gestion_stock_screen.dart';
+import 'package:techstock/screens/fonctionnalites_screen/gestion_client_screen.dart';
+import 'package:techstock/screens/fonctionnalites_screen/dashboard_screen.dart';
 
 class FonctionnalitesScreen extends StatelessWidget {
   const FonctionnalitesScreen({super.key});
@@ -29,10 +33,7 @@ class FonctionnalitesScreen extends StatelessWidget {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Fonctionnalités'),
-        backgroundColor: primary,
-      ),
+      appBar: const MainAppBar(),
       body: LayoutBuilder(
         builder: (context, constraints) {
           // Responsive column count
@@ -63,12 +64,7 @@ class FonctionnalitesScreen extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(12),
-                    onTap: () {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(content: Text('$title sélectionné')),
-                      );
-                      // TODO: Replace SnackBar with navigation to the corresponding screen.
-                    },
+                    onTap: () => _navigateToFeature(context, index),
                     child: Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Column(
@@ -156,6 +152,24 @@ class FonctionnalitesScreen extends StatelessWidget {
       case 3:
       default:
         return Icons.dashboard;
+    }
+  }
+
+  void _navigateToFeature(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        Navigator.of(context).pushNamed(GestionStockScreen.routeName);
+        break;
+      case 2:
+        Navigator.of(context).pushNamed(GestionClientScreen.routeName);
+        break;
+      case 3:
+        Navigator.of(context).pushNamed(DashboardScreen.routeName);
+        break;
+      default:
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Fonctionnalité en cours de développement.')),
+        );
     }
   }
 }

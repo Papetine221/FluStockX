@@ -5,6 +5,9 @@ import 'package:techstock/screens/register_screen.dart';
 import 'package:techstock/screens/fonctionnalites_screen.dart';
 import 'package:techstock/screens/about_screen.dart';
 import 'package:techstock/screens/tarif_screen.dart';
+import 'package:techstock/screens/fonctionnalites_screen/gestion_stock_screen.dart';
+import 'package:techstock/screens/fonctionnalites_screen/gestion_client_screen.dart';
+import 'package:techstock/screens/fonctionnalites_screen/dashboard_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -27,6 +30,10 @@ class MyApp extends StatelessWidget {
         FonctionnalitesScreen.routeName: (_) => const FonctionnalitesScreen(),
         AboutScreen.routeName: (_) => const AboutScreen(),
         TarifScreen.routeName: (_) => const TarifScreen(), 
+        GestionStockScreen.routeName: (_) => const GestionStockScreen(),
+        GestionClientScreen.routeName: (_) => const GestionClientScreen(),
+        DashboardScreen.routeName: (_) => const DashboardScreen(),
+
       },
     );
   }

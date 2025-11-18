@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:techstock/widgets/main_app_bar.dart';
 
 
 class TarifScreen extends StatelessWidget {
@@ -9,9 +10,10 @@ class TarifScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.deepOrange,
+      backgroundColor: Colors.white,
+      appBar: const MainAppBar(),
       body: ListView(
-        padding: EdgeInsets.all(20),
+        padding: const EdgeInsets.all(20),
         children: [
           Card(
             shape: RoundedRectangleBorder(

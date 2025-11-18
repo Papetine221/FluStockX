@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:techstock/models/gestion_client_model.dart';
+import 'package:techstock/widgets/main_app_bar.dart';
 
 class GestionClientScreen extends StatefulWidget { 
   const GestionClientScreen({Key? key}) : super(key: key);
+
+  static const routeName = '/clients';
 
   @override
   State<GestionClientScreen> createState() => _GestionClientScreenState();
@@ -137,9 +140,7 @@ class _GestionClientScreenState extends State<GestionClientScreen> {
     final isQueryActive = trimmedQuery.isNotEmpty;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Gestion des Clients'),
-      ),
+      appBar: const MainAppBar(),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showEditDialog(),
         icon: const Icon(Icons.add),

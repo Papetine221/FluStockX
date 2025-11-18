@@ -1,5 +1,6 @@
 // Créez le fichier : lib/screens/report_screen.dart
 import 'package:flutter/material.dart';
+import 'package:techstock/widgets/main_app_bar.dart';
 /// Un StatefulWidget pour l'écran de création de signalement.
 /// On utilise un StatefulWidget car un formulaire est par nature interactif :
 /// il doit se souvenir de ce que l'utilisateur tape dans les champs.
@@ -54,6 +55,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F8),
+      appBar: const MainAppBar(),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(

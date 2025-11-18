@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:techstock/models/gestion_stock_model.dart';
+import 'package:techstock/widgets/main_app_bar.dart';
 
 class GestionStockScreen extends StatefulWidget {
   const GestionStockScreen({super.key});
+
+  static const routeName = '/stocks';
 
   @override
   State<GestionStockScreen> createState() => _GestionStockScreenState();
@@ -128,14 +131,13 @@ class _GestionStockScreenState extends State<GestionStockScreen> {
 
   @override
   Widget build(BuildContext context) {
+    
     final visibleProducts = _filteredProducts;
     final isQueryActive = _searchTerm.trim().isNotEmpty;
     final trimmedQuery = _searchTerm.trim();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Gestion des Stocks'),
-      ),
+      appBar: const MainAppBar(),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => _showEditDialog(),
         icon: const Icon(Icons.add),

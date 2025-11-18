@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:techstock/widgets/main_app_bar.dart';
 
 
 class AboutScreen extends StatelessWidget {
@@ -10,21 +11,7 @@ class AboutScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.blueAccent),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'À Propos',
-          style: TextStyle(
-            color: Colors.blueAccent,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-      ),
+      appBar: const MainAppBar(),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20),
         child: Column(
