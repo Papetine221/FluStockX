@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:techstock/screens/home_screen.dart';
 import 'package:techstock/screens/login_screen.dart';
 import 'package:techstock/screens/register_screen.dart';
@@ -11,7 +12,7 @@ import 'package:techstock/screens/fonctionnalites_screen/dashboard_screen.dart';
 import 'package:techstock/screens/fonctionnalites_screen/gestion_comptable_screen.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {

@@ -1,15 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:techstock/config/router.dart';
+import 'package:techstock/providers/auth_provider.dart';
 import 'package:techstock/screens/about_screen.dart';
-import 'package:techstock/screens/fonctionnalites_screen.dart';
 import 'package:techstock/screens/login_screen.dart';
+import 'package:techstock/screens/register_screen.dart';
 import 'package:techstock/screens/tarif_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   static const routeName = '/home';
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoggedIn = ref.watch(authControllerProvider);
     // Use a soft gradient background and place a transparent Scaffold on top
     return Stack(
       children: [
@@ -19,10 +23,7 @@ class HomeScreen extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                Colors.blue.shade50,
-                Colors.white,
-              ],
+              colors: [Colors.blue.shade50, Colors.white],
             ),
           ),
         ),
@@ -45,7 +46,11 @@ class HomeScreen extends StatelessWidget {
                     color: Colors.blueAccent.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(Icons.inventory_2, color: Color.fromARGB(255, 122, 92, 205), size: 20),
+                  child: const Icon(
+                    Icons.inventory_2,
+                    color: Color.fromARGB(255, 122, 92, 205),
+                    size: 20,
+                  ),
                 ),
                 const SizedBox(width: 10),
                 const Text(
@@ -70,7 +75,10 @@ class HomeScreen extends StatelessWidget {
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      border: Border.all(color: Color.fromARGB(255, 122, 92, 205), width: 2),
+                      border: Border.all(
+                        color: Color.fromARGB(255, 122, 92, 205),
+                        width: 2,
+                      ),
                       boxShadow: [
                         BoxShadow(
                           color: Colors.black.withOpacity(0.05),
@@ -91,10 +99,12 @@ class HomeScreen extends StatelessWidget {
                     // 0: Accueil, 1: Carte, 2: Profil
                     switch (value) {
                       case 0:
-                        Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+                        Navigator.of(
+                          context,
+                        ).pushReplacementNamed(HomeScreen.routeName);
                         break;
                       case 1:
-                        Navigator.of(context).pushNamed(FonctionnalitesScreen.routeName);
+                        navigateToFeatures(context, ref);
                         break;
                       case 2:
                         Navigator.of(context).pushNamed(TarifScreen.routeName);
@@ -102,12 +112,25 @@ class HomeScreen extends StatelessWidget {
                         break;
                       case 3:
                         Navigator.of(context).pushNamed(AboutScreen.routeName);
-                      break;
+                        break;
 
                       case 4:
-                      Navigator.of(context).pushNamed(LoginScreen.routeName);
-                      break;
-
+                        if (isLoggedIn) {
+                          ref.read(authControllerProvider.notifier).logout();
+                          Navigator.of(
+                            context,
+                          ).pushReplacementNamed(HomeScreen.routeName);
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Déconnexion réussie.'),
+                            ),
+                          );
+                        } else {
+                          Navigator.of(
+                            context,
+                          ).pushNamed(LoginScreen.routeName);
+                        }
+                        break;
                     }
                   },
                   itemBuilder: (context) => [
@@ -151,13 +174,16 @@ class HomeScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-                    const PopupMenuItem<int>(
+                    PopupMenuItem<int>(
                       value: 4,
                       child: Row(
                         children: [
-                          Icon(Icons.login, color: Colors.black54),
+                          Icon(
+                            isLoggedIn ? Icons.logout : Icons.login,
+                            color: Colors.black54,
+                          ),
                           SizedBox(width: 12),
-                          Text('Connexion'),
+                          Text(isLoggedIn ? 'Se déconnecter' : 'Connexion'),
                         ],
                       ),
                     ),
@@ -166,20 +192,27 @@ class HomeScreen extends StatelessWidget {
               ),
             ],
           ),
-// 2. Le corps de la page.
+          // 2. Le corps de la page.
           body: Center(
             child: ConstrainedBox(
-            
-              constraints: const BoxConstraints(maxHeight: 600 ),
+              constraints: const BoxConstraints(maxHeight: 600),
               child: Card(
                 elevation: 6,
-            
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 40),
+
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                margin: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 40,
+                ),
                 child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 28.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24.0,
+                    vertical: 28.0,
+                  ),
                   child: Column(
-                     children: [
+                    children: [
                       // Decorative icon
                       Container(
                         width: 72,
@@ -188,23 +221,34 @@ class HomeScreen extends StatelessWidget {
                           color: Colors.blueAccent.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(16),
                         ),
-                        child: const Icon(Icons.storefront, color: Color.fromARGB(255, 122, 92, 205), size: 36),
+                        child: const Icon(
+                          Icons.storefront,
+                          color: Color.fromARGB(255, 122, 92, 205),
+                          size: 36,
+                        ),
                       ),
                       const SizedBox(height: 18),
-                     
-                     Column(
-                      children: [
-                         const Text(
-                        'La Gestion de Stock et des Commandes  ',
-                        style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold),
-                       ),
-                      const Text(
-                        'devient Plus Simple',
-                        style: TextStyle(fontSize: 34, color: Color.fromARGB(255, 122, 92, 205), fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.right,
+
+                      Column(
+                        children: [
+                          const Text(
+                            'La Gestion de Stock et des Commandes  ',
+                            style: TextStyle(
+                              fontSize: 34,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const Text(
+                            'devient Plus Simple',
+                            style: TextStyle(
+                              fontSize: 34,
+                              color: Color.fromARGB(255, 122, 92, 205),
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.right,
+                          ),
+                        ],
                       ),
-                      ],
-                     ),
                       const SizedBox(height: 12),
                       const Text(
                         'Suivez vos stocks et commandes en temps réel, sans effort. Solution complète pour commerçants, où que vous soyez.',
@@ -217,16 +261,32 @@ class HomeScreen extends StatelessWidget {
                         children: [
                           ElevatedButton.icon(
                             onPressed: () {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Démarrer appuyé')),
-                              );
+                              Navigator.of(
+                                context,
+                              ).pushNamed(RegisterScreen.routeName);
                             },
-                            icon: const Icon(Icons.play_arrow , color: Colors.white,),
-                            label: const Text('Démarrer',style: TextStyle(color: Colors.white),),
+                            icon: const Icon(
+                              Icons.play_arrow,
+                              color: Colors.white,
+                            ),
+                            label: const Text(
+                              'Démarrer',
+                              style: TextStyle(color: Colors.white),
+                            ),
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 29, 14, 203),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                              backgroundColor: const Color.fromARGB(
+                                255,
+                                29,
+                                14,
+                                203,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 12,
+                              ),
                             ),
                           ),
                           const SizedBox(width: 14),
@@ -236,12 +296,23 @@ class HomeScreen extends StatelessWidget {
                                 const SnackBar(content: Text('Demo appuyé')),
                               );
                             },
-                            icon: const Icon(Icons.visibility, color: Colors.blueAccent),
-                            label: const Text('Demo', style: TextStyle(color: Colors.blueAccent)),
+                            icon: const Icon(
+                              Icons.visibility,
+                              color: Colors.blueAccent,
+                            ),
+                            label: const Text(
+                              'Demo',
+                              style: TextStyle(color: Colors.blueAccent),
+                            ),
                             style: OutlinedButton.styleFrom(
                               side: const BorderSide(color: Colors.blueAccent),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 12,
+                              ),
                             ),
                           ),
                         ],
@@ -257,4 +328,3 @@ class HomeScreen extends StatelessWidget {
     );
   }
 }
-

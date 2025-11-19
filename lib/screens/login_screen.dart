@@ -1,18 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:techstock/config/router.dart';
+import 'package:techstock/providers/auth_provider.dart';
 import 'package:techstock/screens/register_screen.dart';
 import 'package:techstock/widgets/main_app_bar.dart';
 
 /// Un StatefulWidget pour l'écran de création de signalement.
 /// On utilise un StatefulWidget car un formulaire est par nature interactif :
 /// il doit se souvenir de ce que l'utilisateur tape dans les champs.
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
 
   static const routeName = '/login';
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  ConsumerState<LoginScreen> createState() => _LoginScreenState();
 }
-class _LoginScreenState extends State<LoginScreen> {
+
+class _LoginScreenState extends ConsumerState<LoginScreen> {
   // Une GlobalKey est une "poignée" unique qui nous permet d'identifier
   // et d'interagir avec un widget spécifique, ici notre Form.
   final _formKey = GlobalKey<FormState>();
@@ -20,9 +24,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Connexion en cours...')),
-      );
+      ref.read(authControllerProvider.notifier).login();
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Connexion réussie.')));
+      navigateToFeatures(context, ref, replace: true);
     }
   }
 
@@ -65,20 +71,24 @@ class _LoginScreenState extends State<LoginScreen> {
                   Text(
                     'Bienvenue',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Connectez-vous pour accéder à votre espace de gestion.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black54),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.black54),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
                   Card(
                     elevation: 4,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(24),
                       child: Form(
@@ -107,8 +117,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                 hint: 'Votre mot de passe',
                                 icon: Icons.lock_outline,
                                 suffix: IconButton(
-                                  icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
-                                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                  ),
+                                  onPressed: () => setState(
+                                    () => _obscurePassword = !_obscurePassword,
+                                  ),
                                 ),
                               ),
                               obscureText: _obscurePassword,
@@ -127,14 +143,18 @@ class _LoginScreenState extends State<LoginScreen> {
                               onPressed: _submit,
                               style: ElevatedButton.styleFrom(
                                 minimumSize: const Size.fromHeight(52),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
                               ),
                               child: const Text('Se connecter'),
                             ),
                             const SizedBox(height: 12),
                             TextButton(
                               onPressed: _navigateToRegister,
-                              child: const Text("Pas encore de compte ? S'inscrire"),
+                              child: const Text(
+                                "Pas encore de compte ? S'inscrire",
+                              ),
                             ),
                           ],
                         ),
@@ -150,5 +170,3 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 }
-
-

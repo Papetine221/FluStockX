@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:techstock/config/router.dart';
+import 'package:techstock/providers/auth_provider.dart';
 import 'package:techstock/screens/about_screen.dart';
-import 'package:techstock/screens/fonctionnalites_screen.dart';
 import 'package:techstock/screens/home_screen.dart';
 import 'package:techstock/screens/login_screen.dart';
 import 'package:techstock/screens/tarif_screen.dart';
 
-class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
+class MainAppBar extends ConsumerWidget implements PreferredSizeWidget {
   const MainAppBar({super.key});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isLoggedIn = ref.watch(authControllerProvider);
     return AppBar(
       automaticallyImplyLeading: false,
       elevation: 0,
@@ -53,7 +56,10 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color.fromARGB(255, 122, 92, 205), width: 2),
+                border: Border.all(
+                  color: const Color.fromARGB(255, 122, 92, 205),
+                  width: 2,
+                ),
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withOpacity(0.05),
@@ -73,10 +79,12 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
             onSelected: (value) {
               switch (value) {
                 case 0:
-                  Navigator.of(context).pushReplacementNamed(HomeScreen.routeName);
+                  Navigator.of(
+                    context,
+                  ).pushReplacementNamed(HomeScreen.routeName);
                   break;
                 case 1:
-                  Navigator.of(context).pushNamed(FonctionnalitesScreen.routeName);
+                  navigateToFeatures(context, ref);
                   break;
                 case 2:
                   Navigator.of(context).pushNamed(TarifScreen.routeName);
@@ -85,12 +93,22 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
                   Navigator.of(context).pushNamed(AboutScreen.routeName);
                   break;
                 case 4:
-                  Navigator.of(context).pushNamed(LoginScreen.routeName);
+                  if (isLoggedIn) {
+                    ref.read(authControllerProvider.notifier).logout();
+                    Navigator.of(
+                      context,
+                    ).pushReplacementNamed(HomeScreen.routeName);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Déconnexion réussie.')),
+                    );
+                  } else {
+                    Navigator.of(context).pushNamed(LoginScreen.routeName);
+                  }
                   break;
               }
             },
-            itemBuilder: (context) => const [
-              PopupMenuItem<int>(
+            itemBuilder: (context) => [
+              const PopupMenuItem<int>(
                 value: 0,
                 child: Row(
                   children: [
@@ -100,7 +118,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ],
                 ),
               ),
-              PopupMenuItem<int>(
+              const PopupMenuItem<int>(
                 value: 1,
                 child: Row(
                   children: [
@@ -110,7 +128,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ],
                 ),
               ),
-              PopupMenuItem<int>(
+              const PopupMenuItem<int>(
                 value: 2,
                 child: Row(
                   children: [
@@ -120,7 +138,7 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
                   ],
                 ),
               ),
-              PopupMenuItem<int>(
+              const PopupMenuItem<int>(
                 value: 3,
                 child: Row(
                   children: [
@@ -134,9 +152,12 @@ class MainAppBar extends StatelessWidget implements PreferredSizeWidget {
                 value: 4,
                 child: Row(
                   children: [
-                    Icon(Icons.login, color: Colors.black54),
-                    SizedBox(width: 12),
-                    Text('Connexion'),
+                    Icon(
+                      isLoggedIn ? Icons.logout : Icons.login,
+                      color: Colors.black54,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(isLoggedIn ? 'Se déconnecter' : 'Connexion'),
                   ],
                 ),
               ),

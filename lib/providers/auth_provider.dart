@@ -1,11 +1,16 @@
-// Créez le fichier : lib/providers/auth_provider.dart
-// import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:flutter_riverpod/legacy.dart' show StateProvider;
-/// Un StateProvider est le type de provider le plus simple.
-/// Il est parfait pour stocker des états simples comme un booléen, un nombre, ou une chaîne de caractères.
-/// Ici, il va stocker 'true' si l'utilisateur est connecté, et 'false' sinon.
-final authStateProvider = StateProvider<bool>((ref) {
-  // La valeur initiale de notre état.
-  // Au démarrage de l'app, l'utilisateur n'est pas connecté.
-  return false;
-});
+import 'package:flutter_riverpod/legacy.dart';
+import 'package:state_notifier/state_notifier.dart';
+
+/// Contrôleur d'authentification très simple pour simuler une connexion.
+class AuthController extends StateNotifier<bool> {
+  AuthController() : super(false);
+
+  void login() => state = true;
+
+  void logout() => state = false;
+}
+
+/// Provider global permettant aux widgets d'écouter l'état de connexion.
+final authControllerProvider = StateNotifierProvider<AuthController, bool>(
+  (ref) => AuthController(),
+);

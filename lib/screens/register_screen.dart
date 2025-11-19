@@ -1,6 +1,8 @@
 // Créez le fichier : lib/screens/report_screen.dart
 import 'package:flutter/material.dart';
+import 'package:techstock/screens/login_screen.dart';
 import 'package:techstock/widgets/main_app_bar.dart';
+
 /// Un StatefulWidget pour l'écran de création de signalement.
 /// On utilise un StatefulWidget car un formulaire est par nature interactif :
 /// il doit se souvenir de ce que l'utilisateur tape dans les champs.
@@ -11,6 +13,7 @@ class RegisterScreen extends StatefulWidget {
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
 }
+
 class _RegisterScreenState extends State<RegisterScreen> {
   // Une GlobalKey est une "poignée" unique qui nous permet d'identifier
   // et d'interagir avec un widget spécifique, ici notre Form.
@@ -51,6 +54,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       fillColor: Colors.white,
     );
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,19 +72,25 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   const SizedBox(height: 24),
                   Text(
                     'Créer un compte',
-                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Rejoignez TechStock et simplifiez la gestion de votre activité.',
-                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.black54),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: Colors.black54),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 32),
                   Card(
                     elevation: 4,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(24),
                       child: Form(
@@ -159,8 +169,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 hint: 'Créer un mot de passe',
                                 icon: Icons.lock_outline,
                                 suffix: IconButton(
-                                  icon: Icon(_obscurePassword ? Icons.visibility_off : Icons.visibility),
-                                  onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                                  icon: Icon(
+                                    _obscurePassword
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                  ),
+                                  onPressed: () => setState(
+                                    () => _obscurePassword = !_obscurePassword,
+                                  ),
                                 ),
                               ),
                               obscureText: _obscurePassword,
@@ -182,8 +198,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 hint: 'Répétez votre mot de passe',
                                 icon: Icons.lock_outline,
                                 suffix: IconButton(
-                                  icon: Icon(_obscureConfirm ? Icons.visibility_off : Icons.visibility),
-                                  onPressed: () => setState(() => _obscureConfirm = !_obscureConfirm),
+                                  icon: Icon(
+                                    _obscureConfirm
+                                        ? Icons.visibility_off
+                                        : Icons.visibility,
+                                  ),
+                                  onPressed: () => setState(
+                                    () => _obscureConfirm = !_obscureConfirm,
+                                  ),
                                 ),
                               ),
                               obscureText: _obscureConfirm,
@@ -202,7 +224,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
                               onPressed: _submit,
                               style: ElevatedButton.styleFrom(
                                 minimumSize: const Size.fromHeight(52),
-                                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
                               ),
                               child: const Text('Créer un compte'),
                             ),
@@ -210,6 +234,23 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         ),
                       ),
                     ),
+                  ),
+                  const SizedBox(height: 24),
+                  Column(
+                    children: [
+                      const Text(
+                        'Vous avez déjà un compte ?',
+                        style: TextStyle(color: Colors.black54),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.of(
+                            context,
+                          ).pushReplacementNamed(LoginScreen.routeName);
+                        },
+                        child: const Text('Se connecter'),
+                      ),
+                    ],
                   ),
                 ],
               ),
