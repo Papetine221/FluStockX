@@ -3,6 +3,7 @@ import 'package:techstock/widgets/main_app_bar.dart';
 import 'package:techstock/screens/fonctionnalites_screen/gestion_stock_screen.dart';
 import 'package:techstock/screens/fonctionnalites_screen/gestion_client_screen.dart';
 import 'package:techstock/screens/fonctionnalites_screen/dashboard_screen.dart';
+import 'package:techstock/screens/fonctionnalites_screen/gestion_comptable_screen.dart';
 
 class FonctionnalitesScreen extends StatelessWidget {
   const FonctionnalitesScreen({super.key});
@@ -16,19 +17,23 @@ class FonctionnalitesScreen extends StatelessWidget {
     final items = [
       {
         'title': 'Gestion des Stocks',
-        'bullets': ['Liste des produits', 'Alertes de stock faible', 'Mouvements & entrées']
+        'bullets': [
+          'Liste des produits',
+          'Alertes de stock faible',
+          'Mouvements & entrées',
+        ],
       },
       {
         'title': 'Gestion Comptable',
-        'bullets': ['Factures', 'Paiements', 'Rapports financiers']
+        'bullets': ['Factures', 'Paiements', 'Rapports financiers'],
       },
       {
         'title': 'Gestion Client',
-        'bullets': ['Fiches clients', 'Historique d\'achat', 'Segmentation']
+        'bullets': ['Fiches clients', 'Historique d\'achat', 'Segmentation'],
       },
       {
         'title': 'Dashboard',
-        'bullets': ['KPI en temps réel', 'Graphiques', 'Export CSV/PDF']
+        'bullets': ['KPI en temps réel', 'Graphiques', 'Export CSV/PDF'],
       },
     ];
 
@@ -40,8 +45,8 @@ class FonctionnalitesScreen extends StatelessWidget {
           final crossAxisCount = constraints.maxWidth > 900
               ? 3
               : constraints.maxWidth > 600
-                  ? 2
-                  : 1;
+              ? 2
+              : 1;
 
           return Padding(
             padding: const EdgeInsets.all(16.0),
@@ -56,7 +61,8 @@ class FonctionnalitesScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 final entry = items[index];
                 final title = entry['title'] as String;
-                final bullets = (entry['bullets'] as List<dynamic>).cast<String>();
+                final bullets = (entry['bullets'] as List<dynamic>)
+                    .cast<String>();
 
                 return Material(
                   color: Colors.white,
@@ -89,7 +95,10 @@ class FonctionnalitesScreen extends StatelessWidget {
                               Expanded(
                                 child: Text(
                                   title,
-                                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ],
@@ -104,13 +113,20 @@ class FonctionnalitesScreen extends StatelessWidget {
                                 children: [
                                   const Padding(
                                     padding: EdgeInsets.only(top: 4.0),
-                                    child: Icon(Icons.circle, size: 8, color: Colors.black45),
+                                    child: Icon(
+                                      Icons.circle,
+                                      size: 8,
+                                      color: Colors.black45,
+                                    ),
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
                                       b,
-                                      style: const TextStyle(fontSize: 14, color: Colors.black87),
+                                      style: const TextStyle(
+                                        fontSize: 14,
+                                        color: Colors.black87,
+                                      ),
                                     ),
                                   ),
                                 ],
@@ -160,6 +176,9 @@ class FonctionnalitesScreen extends StatelessWidget {
       case 0:
         Navigator.of(context).pushNamed(GestionStockScreen.routeName);
         break;
+      case 1:
+        Navigator.of(context).pushNamed(GestionComptableScreen.routeName);
+        break;
       case 2:
         Navigator.of(context).pushNamed(GestionClientScreen.routeName);
         break;
@@ -168,7 +187,9 @@ class FonctionnalitesScreen extends StatelessWidget {
         break;
       default:
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Fonctionnalité en cours de développement.')),
+          const SnackBar(
+            content: Text('Fonctionnalité en cours de développement.'),
+          ),
         );
     }
   }
