@@ -4,7 +4,6 @@ import 'package:techstock/config/router.dart';
 import 'package:techstock/providers/auth_provider.dart';
 import 'package:techstock/screens/about_screen.dart';
 import 'package:techstock/screens/login_screen.dart';
-import 'package:techstock/screens/register_screen.dart';
 import 'package:techstock/screens/tarif_screen.dart';
 
 class HomeScreen extends ConsumerWidget {

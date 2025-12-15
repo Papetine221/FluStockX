@@ -3,7 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:techstock/providers/auth_provider.dart';
 import 'package:techstock/screens/register_screen.dart';
 import 'package:techstock/widgets/main_app_bar.dart';
-import 'package:techstock/screens/fonctionnalites_screen.dart';
 import 'package:techstock/screens/home_screen.dart';
 
 /// Un StatefulWidget pour l'écran de création de signalement.
