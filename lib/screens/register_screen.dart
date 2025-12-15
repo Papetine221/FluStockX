@@ -1,40 +1,90 @@
-// Créez le fichier : lib/screens/report_screen.dart
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:techstock/screens/login_screen.dart';
 import 'package:techstock/widgets/main_app_bar.dart';
+import 'package:techstock/screens/fonctionnalites_screen.dart';
+import 'package:techstock/providers/auth_provider.dart';
 
 /// Un StatefulWidget pour l'écran de création de signalement.
 /// On utilise un StatefulWidget car un formulaire est par nature interactif :
 /// il doit se souvenir de ce que l'utilisateur tape dans les champs.
-class RegisterScreen extends StatefulWidget {
+class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
 
   static const routeName = '/register';
   @override
-  State<RegisterScreen> createState() => _RegisterScreenState();
+  ConsumerState<RegisterScreen> createState() => _RegisterScreenState();
 }
 
-class _RegisterScreenState extends State<RegisterScreen> {
+class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   // Une GlobalKey est une "poignée" unique qui nous permet d'identifier
   // et d'interagir avec un widget spécifique, ici notre Form.
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
   bool _obscureConfirm = true;
-  final _passwordCtrl = TextEditingController();
-  final _confirmCtrl = TextEditingController();
 
-  void _submit() {
+  final _nameController = TextEditingController();
+  final _phoneController = TextEditingController();
+  final _shopNameController = TextEditingController();
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+  final _confirmController = TextEditingController();
+
+  Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Compte créé avec succès ! (Simulation)')),
-      );
+      print('[RegisterScreen] Form validated, submitting...');
+      try {
+        await ref
+            .read(authControllerProvider.notifier)
+            .register(
+              email: _emailController.text.trim(),
+              password: _passwordController.text,
+              name: _nameController.text.trim(),
+              phone: _phoneController.text.trim(),
+              shopName: _shopNameController.text.trim(),
+            );
+
+        print('[RegisterScreen] Register returned.');
+
+        // Check if there are errors in the state BEFORE navigating
+        final state = ref.read(authControllerProvider);
+        if (state.hasError) {
+          print('[RegisterScreen] State has error: ${state.error}');
+          if (mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Erreur: ${state.error}')));
+          }
+        } else {
+          print('[RegisterScreen] State is success, navigating...');
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Compte créé avec succès !')),
+            );
+            Navigator.of(
+              context,
+            ).pushReplacementNamed(FonctionnalitesScreen.routeName);
+          }
+        }
+      } catch (e) {
+        print('[RegisterScreen] Exception caught: $e');
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Erreur: ${e.toString()}')));
+        }
+      }
     }
   }
 
   @override
   void dispose() {
-    _passwordCtrl.dispose();
-    _confirmCtrl.dispose();
+    _nameController.dispose();
+    _phoneController.dispose();
+    _shopNameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    _confirmController.dispose();
     super.dispose();
   }
 
@@ -57,6 +107,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authControllerProvider);
+    final isLoading = authState.isLoading;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F8),
       appBar: const MainAppBar(),
@@ -99,6 +152,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             TextFormField(
+                              controller: _nameController,
                               decoration: _fieldDecoration(
                                 label: 'Prénom & Nom',
                                 hint: 'Ex: Oumou Salama',
@@ -113,6 +167,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             const SizedBox(height: 20),
                             TextFormField(
+                              controller: _phoneController,
                               decoration: _fieldDecoration(
                                 label: 'Numéro de téléphone',
                                 hint: 'Ex: 77 000 00 00',
@@ -131,6 +186,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             const SizedBox(height: 20),
                             TextFormField(
+                              controller: _shopNameController,
                               decoration: _fieldDecoration(
                                 label: 'Nom de la boutique',
                                 hint: 'Ex: Boutique1',
@@ -145,6 +201,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             const SizedBox(height: 20),
                             TextFormField(
+                              controller: _emailController,
                               decoration: _fieldDecoration(
                                 label: 'Email',
                                 hint: 'Ex: contact@techstock.com',
@@ -163,7 +220,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             const SizedBox(height: 20),
                             TextFormField(
-                              controller: _passwordCtrl,
+                              controller: _passwordController,
                               decoration: _fieldDecoration(
                                 label: 'Mot de passe',
                                 hint: 'Créer un mot de passe',
@@ -192,7 +249,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             const SizedBox(height: 20),
                             TextFormField(
-                              controller: _confirmCtrl,
+                              controller: _confirmController,
                               decoration: _fieldDecoration(
                                 label: 'Confirmer le mot de passe',
                                 hint: 'Répétez votre mot de passe',
@@ -213,7 +270,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                 if (value == null || value.isEmpty) {
                                   return 'Confirmation requise';
                                 }
-                                if (value != _passwordCtrl.text) {
+                                if (value != _passwordController.text) {
                                   return 'Les mots de passe ne correspondent pas';
                                 }
                                 return null;
@@ -221,14 +278,18 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                             const SizedBox(height: 32),
                             ElevatedButton(
-                              onPressed: _submit,
+                              onPressed: isLoading ? null : _submit,
                               style: ElevatedButton.styleFrom(
                                 minimumSize: const Size.fromHeight(52),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                 ),
                               ),
-                              child: const Text('Créer un compte'),
+                              child: isLoading
+                                  ? const CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )
+                                  : const Text('Créer un compte'),
                             ),
                           ],
                         ),

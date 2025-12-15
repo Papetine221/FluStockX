@@ -10,8 +10,14 @@ import 'package:techstock/screens/fonctionnalites_screen/gestion_stock_screen.da
 import 'package:techstock/screens/fonctionnalites_screen/gestion_client_screen.dart';
 import 'package:techstock/screens/fonctionnalites_screen/dashboard_screen.dart';
 import 'package:techstock/screens/fonctionnalites_screen/gestion_comptable_screen.dart';
+import 'package:techstock/screens/fonctionnalites_screen/commande_screen.dart';
 
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const ProviderScope(child: MyApp()));
 }
 
@@ -36,7 +42,15 @@ class MyApp extends StatelessWidget {
         GestionComptableScreen.routeName: (_) => const GestionComptableScreen(),
         GestionClientScreen.routeName: (_) => const GestionClientScreen(),
         DashboardScreen.routeName: (_) => const DashboardScreen(),
+        CommandeScreen.routeName: (_) => const CommandeScreen(),
       },
     );
   }
 }
+
+
+//COMMANDES IMPORTANTES POUR FIREBASE
+//npm install -g firebase-tools
+//firebase login
+//dart pub global activate flutterfire_cli
+//flutterfire configure 

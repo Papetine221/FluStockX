@@ -15,7 +15,7 @@ class MainAppBar extends ConsumerWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isLoggedIn = ref.watch(authControllerProvider);
+    final isLoggedIn = ref.watch(authStateChangesProvider).value != null;
     return AppBar(
       automaticallyImplyLeading: false,
       elevation: 0,

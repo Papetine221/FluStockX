@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "959901240944",
+    "project_id": "flustockx2",
+    "storage_bucket": "flustockx2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:959901240944:android:a8e10943f4f6ed8ec36eb5",
+        "android_client_info": {
+          "package_name": "com.example.techstock"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCi0p9QVG338YgsCFaht2gy2WDaNvfB1Zo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -13,7 +13,7 @@ class HomeScreen extends ConsumerWidget {
   static const routeName = '/home';
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final isLoggedIn = ref.watch(authControllerProvider);
+    final isLoggedIn = ref.watch(authStateChangesProvider).value != null;
     // Use a soft gradient background and place a transparent Scaffold on top
     return Stack(
       children: [
@@ -261,17 +261,23 @@ class HomeScreen extends ConsumerWidget {
                         children: [
                           ElevatedButton.icon(
                             onPressed: () {
-                              Navigator.of(
-                                context,
-                              ).pushNamed(RegisterScreen.routeName);
+                              if (isLoggedIn) {
+                                navigateToFeatures(context, ref);
+                              } else {
+                                Navigator.of(
+                                  context,
+                                ).pushNamed(LoginScreen.routeName);
+                              }
                             },
-                            icon: const Icon(
-                              Icons.play_arrow,
+                            icon: Icon(
+                              isLoggedIn
+                                  ? Icons.arrow_forward
+                                  : Icons.play_arrow,
                               color: Colors.white,
                             ),
-                            label: const Text(
-                              'Démarrer',
-                              style: TextStyle(color: Colors.white),
+                            label: Text(
+                              isLoggedIn ? 'Accéder' : 'Démarrer',
+                              style: const TextStyle(color: Colors.white),
                             ),
                             style: ElevatedButton.styleFrom(
                               backgroundColor: const Color.fromARGB(

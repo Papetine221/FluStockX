@@ -2,37 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:techstock/models/gestion_client_model.dart';
 import 'package:techstock/widgets/main_app_bar.dart';
 
-class GestionClientScreen extends StatefulWidget { 
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:techstock/providers/data_providers.dart';
+
+class GestionClientScreen extends ConsumerStatefulWidget {
   const GestionClientScreen({Key? key}) : super(key: key);
 
   static const routeName = '/clients';
 
   @override
-  State<GestionClientScreen> createState() => _GestionClientScreenState();
+  ConsumerState<GestionClientScreen> createState() =>
+      _GestionClientScreenState();
 }
 
-class _GestionClientScreenState extends State<GestionClientScreen> {
-  final List<Client> _clients = [
-    Client(id: 1, name: 'Mamadou Ndiaye', email: 'mamadou@gmail.com', phone: '77 123 45 67'),
-    Client(id: 2, name: 'Awa Diop', email: 'awa.diop@gmail.com', phone: '76 998 11 22'),
-    Client(id: 3, name: 'Ousmane Sarr', email: 'sarr.ousmane@gmail.com', phone: '78 221 44 55'),
-  ];
+class _GestionClientScreenState extends ConsumerState<GestionClientScreen> {
+  // Mock data removed. We use 'ref.watch(clientsProvider)' in build.
 
-  int _nextId = 4;
   String _searchTerm = '';
-
-  List<Client> get _filteredClients {
-    final query = _searchTerm.trim().toLowerCase();
-    if (query.isEmpty) return _clients;
-    return _clients
-        .where(
-          (c) =>
-              c.name.toLowerCase().contains(query) ||
-              c.email.toLowerCase().contains(query) ||
-              c.phone.toLowerCase().contains(query),
-        )
-        .toList();
-  }
 
   Future<void> _showEditDialog({Client? client}) async {
     final isNew = client == null;
@@ -56,7 +42,7 @@ class _GestionClientScreenState extends State<GestionClientScreen> {
                 controller: nameCtrl,
                 decoration: const InputDecoration(labelText: 'Nom du client'),
                 validator: (v) =>
-                (v == null || v.trim().isEmpty) ? 'Nom requis' : null,
+                    (v == null || v.trim().isEmpty) ? 'Nom requis' : null,
               ),
               TextFormField(
                 controller: emailCtrl,
@@ -75,25 +61,41 @@ class _GestionClientScreenState extends State<GestionClientScreen> {
             child: const Text('Annuler'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (formKey.currentState?.validate() ?? false) {
                 final name = nameCtrl.text.trim();
                 final email = emailCtrl.text.trim();
                 final phone = phoneCtrl.text.trim();
 
-                setState(() {
-                  if (isNew) {
-                    _clients.add(
-                      Client(id: _nextId++, name: name, email: email, phone: phone),
-                    );
-                  } else {
-                    client.name = name;
-                    client.email = email;
-                    client.phone = phone;
-                  }
-                });
+                final newClient = Client(
+                  id: isNew ? 0 : client.id,
+                  name: name,
+                  email: email,
+                  phone: phone,
+                );
 
-                Navigator.of(context).pop(true);
+                try {
+                  if (isNew) {
+                    await ref
+                        .read(clientRepositoryProvider)
+                        .addClient(newClient);
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Mise à jour non implémentée (API)'),
+                      ),
+                    );
+                    Navigator.of(context).pop();
+                    return;
+                  }
+
+                  ref.refresh(clientsProvider);
+                  Navigator.of(context).pop(true);
+                } catch (e) {
+                  ScaffoldMessenger.of(
+                    context,
+                  ).showSnackBar(SnackBar(content: Text('Erreur: $e')));
+                }
               }
             },
             child: Text(isNew ? 'Ajouter' : 'Enregistrer'),
@@ -117,27 +119,27 @@ class _GestionClientScreenState extends State<GestionClientScreen> {
         content: Text('Supprimer "${c.name}" ? Cette action est irréversible.'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Annuler')),
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Annuler'),
+          ),
           ElevatedButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Supprimer')),
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Supprimer'),
+          ),
         ],
       ),
     );
 
     if (yes == true) {
-      setState(() => _clients.removeWhere((e) => e.id == c.id));
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('Client supprimé')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Suppression non implémentée (API)')),
+      );
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    final visibleClients = _filteredClients;
-    final trimmedQuery = _searchTerm.trim();
-    final isQueryActive = trimmedQuery.isNotEmpty;
+    final clientsAsync = ref.watch(clientsProvider);
 
     return Scaffold(
       appBar: const MainAppBar(),
@@ -155,70 +157,83 @@ class _GestionClientScreenState extends State<GestionClientScreen> {
               decoration: InputDecoration(
                 prefixIcon: const Icon(Icons.search),
                 hintText: 'Rechercher un client',
-                border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
           ),
           const SizedBox(height: 12),
           Expanded(
-            child: _clients.isEmpty && !isQueryActive
-                ? Center(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        const Text('Aucun client', style: TextStyle(fontSize: 18)),
-                        const SizedBox(height: 12),
-                        ElevatedButton(
-                          onPressed: () => _showEditDialog(),
-                          child: const Text('Ajouter le premier client'),
-                        ),
-                      ],
-                    ),
-                  )
-                : visibleClients.isEmpty
-                    ? Center(
-                        child: Text(
-                          "Aucun résultat pour \"$trimmedQuery\"",
-                          style: const TextStyle(fontSize: 16),
-                          textAlign: TextAlign.center,
-                        ),
-                      )
-                    : ListView.separated(
-                        padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                        itemCount: visibleClients.length,
-                        separatorBuilder: (_, __) => const SizedBox(height: 10),
-                        itemBuilder: (context, i) {
-                          final c = visibleClients[i];
-                          return Card(
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                            child: ListTile(
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                              title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                              subtitle: Text(
-                                'Email : ${c.email}\nTéléphone : ${c.phone}',
-                                style: const TextStyle(height: 1.4),
-                              ),
-                              isThreeLine: true,
-                              trailing: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  IconButton(
-                                    tooltip: 'Modifier',
-                                    icon: const Icon(Icons.edit, color: Colors.orange),
-                                    onPressed: () => _showEditDialog(client: c),
-                                  ),
-                                  IconButton(
-                                    tooltip: 'Supprimer',
-                                    icon: const Icon(Icons.delete, color: Colors.red),
-                                    onPressed: () => _confirmDelete(c),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
+            child: clientsAsync.when(
+              loading: () => const Center(child: CircularProgressIndicator()),
+              error: (err, stack) => Center(child: Text('Erreur: $err')),
+              data: (clients) {
+                final query = _searchTerm.trim().toLowerCase();
+                final visibleClients = query.isEmpty
+                    ? clients
+                    : clients
+                          .where(
+                            (c) =>
+                                c.name.toLowerCase().contains(query) ||
+                                c.email.toLowerCase().contains(query) ||
+                                c.phone.toLowerCase().contains(query),
+                          )
+                          .toList();
+
+                if (visibleClients.isEmpty) {
+                  return const Center(child: Text("Aucun client trouvé"));
+                }
+
+                return ListView.separated(
+                  padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                  itemCount: visibleClients.length,
+                  separatorBuilder: (_, __) => const SizedBox(height: 10),
+                  itemBuilder: (context, i) {
+                    final c = visibleClients[i];
+                    return Card(
+                      elevation: 2,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(10),
                       ),
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        title: Text(
+                          c.name,
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                        subtitle: Text(
+                          'Email : ${c.email}\nTéléphone : ${c.phone}',
+                          style: const TextStyle(height: 1.4),
+                        ),
+                        isThreeLine: true,
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              tooltip: 'Modifier',
+                              icon: const Icon(
+                                Icons.edit,
+                                color: Colors.orange,
+                              ),
+                              onPressed: () => _showEditDialog(client: c),
+                            ),
+                            IconButton(
+                              tooltip: 'Supprimer',
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => _confirmDelete(c),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  },
+                );
+              },
+            ),
           ),
         ],
       ),

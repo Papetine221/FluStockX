@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:techstock/config/router.dart';
 import 'package:techstock/providers/auth_provider.dart';
 import 'package:techstock/screens/register_screen.dart';
 import 'package:techstock/widgets/main_app_bar.dart';
+import 'package:techstock/screens/fonctionnalites_screen.dart';
+import 'package:techstock/screens/home_screen.dart';
 
 /// Un StatefulWidget pour l'écran de création de signalement.
 /// On utilise un StatefulWidget car un formulaire est par nature interactif :
@@ -22,13 +23,63 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _obscurePassword = true;
 
-  void _submit() {
+  final _emailController = TextEditingController();
+  final _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args != null && args is String && _emailController.text.isEmpty) {
+      _emailController.text = args;
+    }
+  }
+
+  Future<void> _submit() async {
     if (_formKey.currentState!.validate()) {
-      ref.read(authControllerProvider.notifier).login();
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Connexion réussie.')));
-      navigateToFeatures(context, ref, replace: true);
+      print('[LoginScreen] Form validated, submitting...');
+      try {
+        await ref
+            .read(authControllerProvider.notifier)
+            .login(_emailController.text.trim(), _passwordController.text);
+
+        print('[LoginScreen] Login returned.');
+
+        // Check if there are errors in the state BEFORE navigating
+        final state = ref.read(authControllerProvider);
+        if (state.hasError) {
+          print('[LoginScreen] State has error: ${state.error}');
+          if (mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text('Erreur: ${state.error}')));
+          }
+        } else {
+          print('[LoginScreen] State is success, navigating...');
+          if (mounted) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(const SnackBar(content: Text('Connexion réussie.')));
+            Navigator.of(
+              context,
+            ).pushNamedAndRemoveUntil(HomeScreen.routeName, (route) => false);
+          }
+        }
+      } catch (e) {
+        print('[LoginScreen] Exception caught: $e');
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Erreur: ${e.toString()}')));
+        }
+      }
     }
   }
 
@@ -55,6 +106,9 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authState = ref.watch(authControllerProvider);
+    final isLoading = authState.isLoading;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF4F6F8),
       appBar: const MainAppBar(),
@@ -97,9 +151,10 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
                             TextFormField(
+                              controller: _emailController,
                               decoration: _fieldDecoration(
-                                label: 'Email ou numéro de téléphone',
-                                hint: 'Ex: chaine@gmail.com ou 77...',
+                                label: 'Email',
+                                hint: 'Ex: chaine@gmail.com',
                                 icon: Icons.alternate_email,
                               ),
                               validator: (value) {
@@ -112,6 +167,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                             const SizedBox(height: 20),
                             TextFormField(
+                              controller: _passwordController,
                               decoration: _fieldDecoration(
                                 label: 'Mot de passe',
                                 hint: 'Votre mot de passe',
@@ -140,18 +196,22 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                             ),
                             const SizedBox(height: 28),
                             ElevatedButton(
-                              onPressed: _submit,
+                              onPressed: isLoading ? null : _submit,
                               style: ElevatedButton.styleFrom(
                                 minimumSize: const Size.fromHeight(52),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(14),
                                 ),
                               ),
-                              child: const Text('Se connecter'),
+                              child: isLoading
+                                  ? const CircularProgressIndicator(
+                                      color: Colors.white,
+                                    )
+                                  : const Text('Se connecter'),
                             ),
                             const SizedBox(height: 12),
                             TextButton(
-                              onPressed: _navigateToRegister,
+                              onPressed: isLoading ? null : _navigateToRegister,
                               child: const Text(
                                 "Pas encore de compte ? S'inscrire",
                               ),

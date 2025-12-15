@@ -10,4 +10,17 @@ class Client {
     this.email = '',
     this.phone = '',
   });
+
+  factory Client.fromMap(Map<String, dynamic> map) {
+    return Client(
+      id: int.tryParse(map['id'].toString()) ?? 0,
+      name: map['name'] ?? '',
+      email: map['email'] ?? '',
+      phone: map['phone'] ?? '',
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {'id': id, 'name': name, 'email': email, 'phone': phone};
+  }
 }
