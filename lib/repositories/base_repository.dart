@@ -1,7 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
 /// Base class for repositories to access the current authenticated user's ID.
-class BaseRepository {
+// Author: Papetine221
+abstract class BaseRepository {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   String get currentUserId {

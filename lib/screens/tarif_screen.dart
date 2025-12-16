@@ -1,6 +1,6 @@
+// Author: Papetine221
 import 'package:flutter/material.dart';
 import 'package:techstock/widgets/main_app_bar.dart';
-
 
 class TarifScreen extends StatelessWidget {
   const TarifScreen({super.key});
@@ -99,7 +99,9 @@ class TarifScreen extends StatelessWidget {
                       featureItemGreen("Mises à jour produits"),
                       featureItemRed("Notifications stock épuisé"),
                       featureItemRed("Gestion des comptes employés"),
-                      featureItemRed("Business Manager (Noter dépenses et entrées)"),
+                      featureItemRed(
+                        "Business Manager (Noter dépenses et entrées)",
+                      ),
                       featureItemRed("Messages marketing"),
                       featureItemRed("Site web (page produits)"),
                       featureItemRed("Support prioritaire"),
@@ -116,7 +118,10 @@ class TarifScreen extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 12,
+                      ),
                     ),
                     onPressed: () {},
                     child: Text("Acheter maintenant"),
@@ -210,7 +215,9 @@ class TarifScreen extends StatelessWidget {
                       featureItemGreen("Mises à jour produits"),
                       featureItemGreen("Notifications stock épuisé"),
                       featureItemRed("Gestion des comptes employés"),
-                      featureItemRed("Business Manager (Noter dépenses et entrées)"),
+                      featureItemRed(
+                        "Business Manager (Noter dépenses et entrées)",
+                      ),
                       featureItemRed("Messages marketing"),
                       featureItemRed("Site web (page produits)"),
                       featureItemRed("Support prioritaire"),
@@ -227,7 +234,10 @@ class TarifScreen extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 12,
+                      ),
                     ),
                     onPressed: () {},
                     child: Text("Acheter maintenant"),
@@ -321,7 +331,9 @@ class TarifScreen extends StatelessWidget {
                       featureItemGreen("Mises à jour produits"),
                       featureItemGreen("Notifications stock épuisé"),
                       featureItemGreen("Gestion des comptes employés"),
-                      featureItemGreen("Business Manager (Noter dépenses et entrées)"),
+                      featureItemGreen(
+                        "Business Manager (Noter dépenses et entrées)",
+                      ),
                       featureItemGreen("Messages marketing"),
                       featureItemGreen("Site web (page produits)"),
                       featureItemGreen("Support prioritaire"),
@@ -338,7 +350,10 @@ class TarifScreen extends StatelessWidget {
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      padding: EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                      padding: EdgeInsets.symmetric(
+                        horizontal: 32,
+                        vertical: 12,
+                      ),
                     ),
                     onPressed: () {},
                     child: Text("Acheter maintenant"),
@@ -349,11 +364,9 @@ class TarifScreen extends StatelessWidget {
           ),
         ],
       ),
-
     );
   }
 }
-
 
 Widget featureItemGreen(String text) {
   return Padding(

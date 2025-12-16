@@ -1,6 +1,6 @@
+// Author: Papetine221
 import 'package:flutter/material.dart';
 import 'package:techstock/widgets/main_app_bar.dart';
-
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({super.key});
@@ -46,10 +46,7 @@ class AboutScreen extends StatelessWidget {
                   const SizedBox(height: 8),
                   const Text(
                     'Gestion de Stock Intelligente',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.black87,
-                    ),
+                    style: TextStyle(fontSize: 16, color: Colors.black87),
                   ),
                 ],
               ),
@@ -118,10 +115,7 @@ class AboutScreen extends StatelessWidget {
                   icon: Icons.notifications,
                   title: 'Alertes Stock',
                 ),
-                _buildFeatureItem(
-                  icon: Icons.cloud,
-                  title: 'Cloud Sécurisé',
-                ),
+                _buildFeatureItem(icon: Icons.cloud, title: 'Cloud Sécurisé'),
               ],
             ),
 
@@ -199,10 +193,7 @@ class AboutScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: const TextStyle(fontSize: 14),
-                  ),
+                  Text(description, style: const TextStyle(fontSize: 14)),
                 ],
               ),
             ),
@@ -212,10 +203,7 @@ class AboutScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildFeatureItem({
-    required IconData icon,
-    required String title,
-  }) {
+  Widget _buildFeatureItem({required IconData icon, required String title}) {
     return Card(
       elevation: 2,
       child: Padding(
@@ -228,10 +216,7 @@ class AboutScreen extends StatelessWidget {
             Text(
               title,
               textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 12,
-              ),
+              style: const TextStyle(fontWeight: FontWeight.w500, fontSize: 12),
             ),
           ],
         ),
