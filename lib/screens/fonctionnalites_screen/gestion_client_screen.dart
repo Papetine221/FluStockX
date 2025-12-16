@@ -80,13 +80,9 @@ class _GestionClientScreenState extends ConsumerState<GestionClientScreen> {
                         .read(clientRepositoryProvider)
                         .addClient(newClient);
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Mise à jour non implémentée (API)'),
-                      ),
-                    );
-                    Navigator.of(context).pop();
-                    return;
+                    await ref
+                        .read(clientRepositoryProvider)
+                        .updateClient(newClient);
                   }
 
                   ref.refresh(clientsProvider);
@@ -131,9 +127,21 @@ class _GestionClientScreenState extends ConsumerState<GestionClientScreen> {
     );
 
     if (yes == true) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Suppression non implémentée (API)')),
-      );
+      try {
+        await ref.read(clientRepositoryProvider).deleteClient(c.id.toString());
+        ref.refresh(clientsProvider);
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Client supprimé')));
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Erreur: $e')));
+        }
+      }
     }
   }
 

@@ -45,4 +45,24 @@ class TransactionRepository extends BaseRepository {
       throw Exception('Erreur serveur: ${response.statusCode}');
     }
   }
+
+  Future<void> deleteTransaction(String id) async {
+    final uid = currentUserId;
+    final uri = Uri.parse(ApiConfig.deleteTransaction);
+
+    final response = await http.post(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({'id': id, 'user_id': uid}),
+    );
+
+    if (response.statusCode == 200) {
+      final jsonResponse = json.decode(response.body);
+      if (jsonResponse['status'] != 'success') {
+        throw Exception(jsonResponse['message']);
+      }
+    } else {
+      throw Exception('Erreur serveur: ${response.statusCode}');
+    }
+  }
 }

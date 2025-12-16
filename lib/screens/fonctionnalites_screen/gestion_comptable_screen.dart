@@ -62,11 +62,42 @@ class _GestionComptableScreenState
     );
   }
 
-  // Delete not yet implemented in API
-  void _deleteTransaction(String id) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Suppression non implémentée (API)')),
+  Future<void> _deleteTransaction(String id) async {
+    final yes = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Confirmer la suppression'),
+        content: const Text('Supprimer cette transaction ?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('Annuler'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Supprimer'),
+          ),
+        ],
+      ),
     );
+
+    if (yes == true) {
+      try {
+        await ref.read(transactionRepositoryProvider).deleteTransaction(id);
+        ref.refresh(transactionsProvider);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Transaction supprimée')),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Erreur: $e')));
+        }
+      }
+    }
   }
 
   @override
@@ -205,7 +236,7 @@ class _GestionComptableScreenState
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(
-                                    '${t.type == 'income' ? '+' : '-'} ${t.amount.toStringAsFixed(2)} €',
+                                    '${t.type == 'income' ? '+' : '-'} ${t.amount.toStringAsFixed(2)} FCFA',
                                     style: TextStyle(
                                       fontWeight: FontWeight.bold,
                                       color: t.type == 'income'
@@ -291,7 +322,7 @@ class _SummaryCard extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            '${amount.toStringAsFixed(2)} €',
+            '${amount.toStringAsFixed(2)} FCFA',
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -416,7 +447,7 @@ class _TransactionDialogState extends State<_TransactionDialog> {
                 controller: _amountCtrl,
                 decoration: const InputDecoration(
                   labelText: 'Montant',
-                  suffixText: '€',
+                  suffixText: 'FCFA',
                 ),
                 keyboardType: const TextInputType.numberWithOptions(
                   decimal: true,

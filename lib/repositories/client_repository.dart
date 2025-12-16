@@ -57,4 +57,58 @@ class ClientRepository extends BaseRepository {
       throw Exception('Erreur lors de l\'ajout: $e');
     }
   }
+
+  Future<void> updateClient(Client client) async {
+    try {
+      final uid = currentUserId;
+      final uri = Uri.parse(ApiConfig.updateClient);
+
+      final response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'id': client.id,
+          'user_id': uid,
+          'name': client.name,
+          'email': client.email,
+          'phone': client.phone,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        if (jsonResponse['status'] != 'success') {
+          throw Exception(jsonResponse['message']);
+        }
+      } else {
+        throw Exception('Erreur serveur: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Erreur lors de la modification: $e');
+    }
+  }
+
+  Future<void> deleteClient(String id) async {
+    try {
+      final uid = currentUserId;
+      final uri = Uri.parse(ApiConfig.deleteClient);
+
+      final response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'id': id, 'user_id': uid}),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        if (jsonResponse['status'] != 'success') {
+          throw Exception(jsonResponse['message']);
+        }
+      } else {
+        throw Exception('Erreur serveur: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Erreur lors de la suppression: $e');
+    }
+  }
 }

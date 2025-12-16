@@ -60,4 +60,61 @@ class ProductRepository extends BaseRepository {
       throw Exception('Erreur ajout produit: $e');
     }
   }
+
+  Future<void> updateProduct(Product product) async {
+    try {
+      final uid = currentUserId;
+      final uri = Uri.parse(ApiConfig.updateProduct);
+
+      final response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'id': product.id,
+          'user_id': uid,
+          'name': product.name,
+          'category': product.category,
+          'stockQuantity': product.quantity,
+          'minThreshold': product.minThreshold,
+          'formattedPrice': '${product.price.toStringAsFixed(0)} FCFA',
+          'sellingPrice': product.price,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        if (jsonResponse['status'] != 'success') {
+          throw Exception(jsonResponse['message']);
+        }
+      } else {
+        throw Exception('Erreur serveur: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Erreur modification produit: $e');
+    }
+  }
+
+  Future<void> deleteProduct(String id) async {
+    try {
+      final uid = currentUserId;
+      final uri = Uri.parse(ApiConfig.deleteProduct);
+
+      final response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({'id': id, 'user_id': uid}),
+      );
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> jsonResponse = json.decode(response.body);
+        if (jsonResponse['status'] != 'success') {
+          throw Exception(jsonResponse['message']);
+        }
+      } else {
+        throw Exception('Erreur serveur: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('Erreur suppression produit: $e');
+    }
+  }
 }

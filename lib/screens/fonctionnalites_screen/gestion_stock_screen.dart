@@ -115,16 +115,9 @@ class _GestionStockScreenState extends ConsumerState<GestionStockScreen> {
                         .read(productRepositoryProvider)
                         .addProduct(newProduct);
                   } else {
-                    // Update not implemented in repo yet, show snackbar
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text(
-                          'Mise à jour pas encore connectée à l\'API pour les produits.',
-                        ),
-                      ),
-                    );
-                    Navigator.of(context).pop();
-                    return;
+                    await ref
+                        .read(productRepositoryProvider)
+                        .updateProduct(newProduct);
                   }
 
                   // Refresh the list
@@ -173,12 +166,23 @@ class _GestionStockScreenState extends ConsumerState<GestionStockScreen> {
     );
 
     if (yes == true) {
-      // Delete unimplemented in UI yet
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Suppression non implémentée (API)')),
-      );
-      // await ref.read(productRepositoryProvider).deleteProduct(p.id);
-      // ref.refresh(productsProvider);
+      try {
+        await ref
+            .read(productRepositoryProvider)
+            .deleteProduct(p.id.toString());
+        ref.refresh(productsProvider);
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Produit supprimé')));
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text('Erreur: $e')));
+        }
+      }
     }
   }
 
@@ -251,7 +255,7 @@ class _GestionStockScreenState extends ConsumerState<GestionStockScreen> {
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         subtitle: Text(
-                          '${p.description}\nPrix: ${p.price.toStringAsFixed(2)} €  |  Stocks: ${p.quantity}',
+                          '${p.description}\nPrix: ${p.price.toStringAsFixed(2)} FCFA  |  Stocks: ${p.quantity}',
                           style: const TextStyle(height: 1.4),
                         ),
                         isThreeLine: true,

@@ -129,20 +129,104 @@ class _CommandeScreenState extends ConsumerState<CommandeScreen> {
                           'Commande #${commande.id}', // ID from DB
                         ),
                         subtitle: Text(
-                          '$clientName - ${commande.totalAmount.toStringAsFixed(2)} €\n${commande.date.day}/${commande.date.month}/${commande.date.year}',
+                          '$clientName - ${commande.totalAmount.toStringAsFixed(2)} FCFA\n${commande.date.day}/${commande.date.month}/${commande.date.year}',
                         ),
-                        children: commande.items.map((item) {
-                          return ListTile(
-                            title: Text(
-                              item.productName ??
-                                  'Produit ID ${item.productId}',
+                        children:
+                            commande.items.map((item) {
+                              return ListTile(
+                                title: Text(
+                                  item.productName ??
+                                      'Produit ID ${item.productId}',
+                                ),
+                                subtitle: Text('PU: ${item.unitPrice} FCFA'),
+                                trailing: Text(
+                                  'x${item.quantity} = ${item.total.toStringAsFixed(2)} FCFA',
+                                ),
+                              );
+                            }).toList()..add(
+                              ListTile(
+                                leading: const Icon(
+                                  Icons.info_outline,
+                                  size: 20,
+                                ),
+                                title: const Text(
+                                  'Supprimer cette commande',
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                trailing: IconButton(
+                                  icon: const Icon(
+                                    Icons.delete,
+                                    color: Colors.red,
+                                  ),
+                                  tooltip:
+                                      'Annuler commande et restaurer le stock',
+                                  onPressed: () async {
+                                    final yes = await showDialog<bool>(
+                                      context: context,
+                                      builder: (context) => AlertDialog(
+                                        title: const Text(
+                                          'Annuler la commande ?',
+                                        ),
+                                        content: const Text(
+                                          'Cela supprimera la commande et RESTAURERA le stock des produits concernés.\nConfirmer ?',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () => Navigator.of(
+                                              context,
+                                            ).pop(false),
+                                            child: const Text('Retour'),
+                                          ),
+                                          ElevatedButton(
+                                            style: ElevatedButton.styleFrom(
+                                              backgroundColor: Colors.red,
+                                              foregroundColor: Colors.white,
+                                            ),
+                                            onPressed: () =>
+                                                Navigator.of(context).pop(true),
+                                            child: const Text('Confirmer'),
+                                          ),
+                                        ],
+                                      ),
+                                    );
+
+                                    if (yes == true) {
+                                      try {
+                                        await ref
+                                            .read(orderRepositoryProvider)
+                                            .deleteOrder(commande.id);
+                                        ref.refresh(ordersProvider);
+                                        ref.refresh(productsProvider);
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Commande annulée et stock restauré.',
+                                              ),
+                                            ),
+                                          );
+                                        }
+                                      } catch (e) {
+                                        if (mounted) {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text('Erreur: $e'),
+                                            ),
+                                          );
+                                        }
+                                      }
+                                    }
+                                  },
+                                ),
+                              ),
                             ),
-                            subtitle: Text('PU: ${item.unitPrice} €'),
-                            trailing: Text(
-                              'x${item.quantity} = ${item.total.toStringAsFixed(2)} €',
-                            ),
-                          );
-                        }).toList(),
                       ),
                     );
                   },
@@ -269,7 +353,7 @@ class _AddOrderDialogState extends State<_AddOrderDialog> {
                           (p) => DropdownMenuItem(
                             value: p,
                             child: Text(
-                              '${p.name} (${p.price}€)',
+                              '${p.name} (${p.price} FCFA)',
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
@@ -314,12 +398,12 @@ class _AddOrderDialogState extends State<_AddOrderDialog> {
                   return ListTile(
                     dense: true,
                     title: Text(item.productName),
-                    subtitle: Text('${item.quantity} x ${item.unitPrice} €'),
+                    subtitle: Text('${item.quantity} x ${item.unitPrice} FCFA'),
                     trailing: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          '${item.total.toStringAsFixed(2)} €',
+                          '${item.total.toStringAsFixed(2)} FCFA',
                           style: const TextStyle(fontWeight: FontWeight.bold),
                         ),
                         IconButton(
@@ -348,7 +432,7 @@ class _AddOrderDialogState extends State<_AddOrderDialog> {
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
                   Text(
-                    '${_totalAmount.toStringAsFixed(2)} €',
+                    '${_totalAmount.toStringAsFixed(2)} FCFA',
                     style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
