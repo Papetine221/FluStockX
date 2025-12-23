@@ -7,10 +7,11 @@ class ApiConfig {
   // Pour iOS simulateur : 'http://127.0.0.1/API_techstock'
 
   // static const String baseUrl = 'http://10.0.2.2/API_techstock';
-  static const String baseUrl = 'http://192.168.137.1/API_techstock';
+  static const String baseUrl = 'http://192.168.1.15/API_techstock';
 
   // ---------------------------------------------------------------------------
-  // Endpoints (Points d'entrée)
+  // Endpoints (Points d'entrée) ; F
+
   // ---------------------------------------------------------------------------
 
   // --- Clients ---

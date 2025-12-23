@@ -130,7 +130,7 @@ class _CommandeScreenState extends ConsumerState<CommandeScreen> {
                           'Commande #${commande.id}', // ID from DB
                         ),
                         subtitle: Text(
-                          '$clientName - ${commande.totalAmount.toStringAsFixed(2)} FCFA\n${commande.date.day}/${commande.date.month}/${commande.date.year}',
+                          '$clientName - ${commande.totalAmount.toStringAsFixed(2)} \n${commande.date.day}/${commande.date.month}/${commande.date.year}',
                         ),
                         children:
                             commande.items.map((item) {
